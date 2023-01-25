@@ -11,7 +11,7 @@ module.exports = {
     '/cypress/',
     '/.next/',
     '/setup',
-    '__tests__/helpers.tsx',
+    '/__tests__/helpers.tsx',
     '/__tests__/__mocks__',
     '/__tests__/__helpers__'
   ],
