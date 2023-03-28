@@ -12,19 +12,22 @@ export type RepositoryInfo = {
   owner: string;
   repo: string;
   page: string;
+  ref: string;
 };
 
 export function getDelegatesRepositoryInformation(network: SupportedNetworks): RepositoryInfo {
   const repoMainnet = {
-    owner: 'makerdao',
+    owner: 'makerdao-dux', //TODO: switch back to makerdao after done testing
     repo: 'community',
-    page: 'governance/delegates'
+    page: 'governance/delegates',
+    ref: 'endgame-updates' //TODO: switch to master after testing
   };
 
   const repoTest = {
     owner: 'makerdao-dux',
     repo: 'voting-delegates',
-    page: 'delegates'
+    page: 'delegates',
+    ref: 'master'
   };
 
   const delegatesRepositoryInfo = network === SupportedNetworks.MAINNET ? repoMainnet : repoTest;

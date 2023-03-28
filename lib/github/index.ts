@@ -49,23 +49,24 @@ const getNextToken = () => {
   return octokits[kitIndex];
 };
 
-export async function fetchGitHubPage(owner: string, repo: string, path: string): Promise<GithubPage[]> {
+export async function fetchGitHubPage(owner: string, repo: string, path: string, ref: string = 'master'): Promise<GithubPage[]> {
   const octokit = getNextToken();
 
   const { data } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
     owner,
     repo,
-    path
+    path,
+    ref
   });
 
   return data as GithubPage[];
 }
 
 export async function fetchGithubGraphQL(
-  { owner, repo, page }: RepositoryInfo,
+  { owner, repo, page, ref }: RepositoryInfo,
   query: string
 ): Promise<GraphQlQueryResponseData> {
   const octokit = getNextToken();
-  const data = await octokit.graphql(query, { owner, name: repo, expression: `master:${page}` });
+  const data = await octokit.graphql(query, { owner, name: repo, expression: `${ref}:${page}` });
   return data as GraphQlQueryResponseData;
 }

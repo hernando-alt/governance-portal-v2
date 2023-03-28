@@ -34,7 +34,8 @@ export async function getGithubExecutives(network: SupportedNetworks): Promise<C
   const githubRepo = {
     owner: 'makerdao',
     repo: 'community',
-    page: 'governance/votes'
+    page: 'governance/votes',
+    ref: 'master'
   };
 
   const githubResponse = await fetchGithubGraphQL(githubRepo, allGithubExecutives);
