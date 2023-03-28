@@ -24,10 +24,11 @@ import { ONE_HOUR_IN_MS } from 'modules/app/constants/time';
 async function extractGithubInformation(
   owner: string,
   repo: string,
-  folder: GithubPage
+  folder: GithubPage,
+  ref: string
 ): Promise<DelegateRepoInformation | undefined> {
   try {
-    const folderContents = await fetchGitHubPage(owner, repo, folder.path);
+    const folderContents = await fetchGitHubPage(owner, repo, folder.path, ref);
 
     const profileMd = folderContents.find(item => item.name === 'profile.md');
 
@@ -199,13 +200,14 @@ export async function fetchGithubDelegate(
     const folders = await fetchGitHubPage(
       delegatesRepositoryInfo.owner,
       delegatesRepositoryInfo.repo,
-      delegatesRepositoryInfo.page
+      delegatesRepositoryInfo.page,
+      delegatesRepositoryInfo.ref
     );
 
     const folder = folders.find(f => f.name.toLowerCase() === address.toLowerCase());
 
     const userInfo = folder
-      ? await extractGithubInformation(delegatesRepositoryInfo.owner, delegatesRepositoryInfo.repo, folder)
+      ? await extractGithubInformation(delegatesRepositoryInfo.owner, delegatesRepositoryInfo.repo, folder, delegatesRepositoryInfo.ref)
       : undefined;
 
     // Store in cache

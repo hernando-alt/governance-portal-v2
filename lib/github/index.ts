@@ -49,7 +49,7 @@ const getNextToken = () => {
   return octokits[kitIndex];
 };
 
-export async function fetchGitHubPage(owner: string, repo: string, path: string, ref: string = 'master'): Promise<GithubPage[]> {
+export async function fetchGitHubPage(owner: string, repo: string, path: string, ref: string): Promise<GithubPage[]> {
   const octokit = getNextToken();
 
   const { data } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
