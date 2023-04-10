@@ -239,6 +239,9 @@ const Delegates = ({
     return [constitutional, shadow, expired];
   }, [delegates, propDelegates]);
 
+  const shouldDisableSearch = !showConstitutional && showShadow;
+  console.log('🚀 ~ file: index.tsx:226 ~ shouldDisableSearch:', shouldDisableSearch);
+
   return (
     <PrimaryLayout sx={{ maxWidth: [null, null, null, 'page', 'dashboard'] }}>
       <HeadComponent
@@ -274,6 +277,7 @@ const Delegates = ({
                   placeholder="Search by name"
                   withSearchButton={true}
                   performSearchOnClear={true}
+                  disabled={shouldDisableSearch}
                 />
                 <DelegatesSortFilter />
                 <DelegatesCvcFilter cvcs={cvcs} sx={{ m: 2 }} />

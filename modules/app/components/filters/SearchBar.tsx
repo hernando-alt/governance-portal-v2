@@ -18,6 +18,7 @@ type Props = {
   placeholder?: string;
   withSearchButton?: boolean;
   performSearchOnClear?: boolean;
+  disabled?: boolean;
 };
 
 export const SearchBar = ({
@@ -26,6 +27,7 @@ export const SearchBar = ({
   placeholder = 'Search',
   withSearchButton,
   performSearchOnClear,
+  disabled,
   ...props
 }: Props): JSX.Element => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,6 +68,7 @@ export const SearchBar = ({
   }, [value]);
 
   const hasSearchTerm = !(!searchTerm || searchTerm === '');
+  const isActive = hasSearchTerm && !disabled;
 
   return (
     <Box sx={{ position: 'relative' }} {...props}>
@@ -81,9 +84,9 @@ export const SearchBar = ({
           maxWidth: 250,
           borderRadius: 'round',
           px: 3,
-          borderColor: hasSearchTerm ? 'primary' : 'auto',
+          borderColor: isActive ? 'primary' : 'auto',
           '&:focus': {
-            borderColor: hasSearchTerm ? 'primary' : 'auto'
+            borderColor: isActive ? 'primary' : 'auto'
           },
           'input:invalid ~ span:after': {
             paddingLeft: '5px',
@@ -91,13 +94,14 @@ export const SearchBar = ({
             cursor: 'pointer'
           }
         }}
+        disabled={disabled}
       />
-      {!hasSearchTerm && (
+      {(!hasSearchTerm || disabled) && (
         <Box sx={{ position: 'absolute', top: 11, right: 13 }}>
           <Icon name="magnifying_glass" sx={{ color: 'textSecondary', size: 3 }} />
         </Box>
       )}
-      {withSearchButton && hasSearchTerm && (
+      {withSearchButton && hasSearchTerm && !disabled && (
         <IconButton
           sx={{
             position: 'absolute',
