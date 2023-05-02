@@ -31,12 +31,11 @@ describe('Account Page', async () => {
       // See transaction go through
       cy.contains('Confirm Transaction').should('be.visible');
       cy.contains('Transaction Pending').should('be.visible');
-      cy.contains('Transaction Sent').should('be.visible');
 
-      cy.contains('Close').click();
-
-      // Find the text of delegated MKR
+      // Find the text of delegated MKR and delegate contract address
       cy.contains('Total MKR Delegated').should('be.visible');
+      cy.contains('Your delegate contract address').should('be.visible');
+      
 
       // This data-testid no longer exists so I'm not sure if this assertion is still relevant, prune later.
       // const text = await new Cypress.Promise<string>(resolve => {
