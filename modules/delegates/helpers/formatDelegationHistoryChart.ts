@@ -1,7 +1,14 @@
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
 import { MKRLockedDelegateAPIResponse } from '../types/delegate';
 import { formatIsoDateConversion } from 'lib/datetime';
 import { MKRWeightHisory } from '../types/mkrWeight';
-import { format } from 'date-fns';
 import BigNumber from 'lib/bigNumberJs';
 import { differenceInCalendarYears, subDays } from 'date-fns';
 
@@ -17,11 +24,7 @@ export const formatDelegationHistoryChart = (
 
   const end =
     years * 365 +
-    parseInt(
-      format(new Date(), 'D', {
-        useAdditionalDayOfYearTokens: true
-      })
-    );
+    formatIsoDateConversion((new Date()).toISOString());
 
   const output: MKRWeightHisory[] = [];
 

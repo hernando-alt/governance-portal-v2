@@ -1,4 +1,12 @@
-import { Delegate } from '../types';
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
+import { Delegate, DelegateInfo, DelegatePaginated } from '../types';
 import { Box, Flex, Text } from 'theme-ui';
 import { limitString } from 'lib/string';
 import { DelegatePicture } from 'modules/delegates/components';
@@ -6,21 +14,27 @@ import { InternalLink } from 'modules/app/components/InternalLink';
 import { useAccount } from 'modules/app/hooks/useAccount';
 import { Address } from 'modules/address/components/Address';
 
-export default function DelegateAvatarName({ delegate }: { delegate: Delegate }): React.ReactElement {
+export default function DelegateAvatarName({
+  delegate,
+  onVisitDelegate
+}: {
+  delegate: Delegate | DelegatePaginated | DelegateInfo;
+  onVisitDelegate?: () => void;
+}): React.ReactElement {
   const { account } = useAccount();
   const isOwner = account?.toLowerCase() === delegate.address.toLowerCase();
 
   return (
     <InternalLink href={`/address/${delegate.voteDelegateAddress}`} title="View profile details">
-      <Flex>
+      <Flex onClick={() => onVisitDelegate?.()}>
         <DelegatePicture delegate={delegate} />
 
         <Box sx={{ ml: 2 }}>
           <Flex sx={{ alignItems: 'center' }}>
             <Text as="p" variant="microHeading" sx={{ fontSize: [3, 4], overflowWrap: 'break-word' }}>
               {delegate.name
-                ? limitString(delegate.name, isOwner ? 23 : 43, '...')
-                : limitString('Unknown', isOwner ? 12 : 43, '...')}
+                ? limitString(delegate.name, isOwner ? 23 : 63, '...')
+                : limitString('Unknown', isOwner ? 12 : 63, '...')}
             </Text>
             {isOwner && (
               <Flex

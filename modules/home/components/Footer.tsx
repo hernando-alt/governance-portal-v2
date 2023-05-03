@@ -1,4 +1,12 @@
-import { Flex, Text, useColorMode } from 'theme-ui';
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
+import { Box, Flex, Text, useColorMode } from 'theme-ui';
 import { Icon } from '@makerdao/dai-ui-icons';
 import { ExternalLink } from 'modules/app/components/ExternalLink';
 import React from 'react';
@@ -126,10 +134,6 @@ export default function Footer({ locale = 'en' }: { locale?: string }): React.Re
         {
           url: 'https://www.notion.so/makerdao/Maker-Brand-ac517c82ff9a43089d0db5bb2ee045a4',
           title: t('Brand Assets')
-        },
-        {
-          url: 'https://makerdao.com/en/feeds/',
-          title: t('Oracle Feeds')
         }
       ]
     }
@@ -154,8 +158,8 @@ export default function Footer({ locale = 'en' }: { locale?: string }): React.Re
 
   const mobile = bpi <= 1;
   return (
-    <div sx={{ position: 'relative', mt: 4 }}>
-      <div
+    <Box sx={{ position: 'relative', mt: 4 }}>
+      <Box
         sx={{
           width: '100vw',
           height: '100%',
@@ -221,6 +225,6 @@ export default function Footer({ locale = 'en' }: { locale?: string }): React.Re
         </Flex>
         <ContactSection heading="Development & UX Channels" icon="makerdux" logos={logos.makerdux} />
       </Flex>
-    </div>
+    </Box>
   );
 }

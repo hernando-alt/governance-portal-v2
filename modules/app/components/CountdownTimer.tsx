@@ -1,8 +1,15 @@
-import { useState } from 'react';
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
+import { useState, useEffect } from 'react';
 import { Text, Flex, ThemeUIStyleObject } from 'theme-ui';
 import { Icon } from '@makerdao/dai-ui-icons';
 
-import useInterval from 'lib/useInterval';
 import TooltipComponent from './Tooltip';
 import { formatDateWithTime } from 'lib/datetime';
 
@@ -31,20 +38,19 @@ const generateText = (endTime, endText) => {
 };
 
 const CountdownTimer = ({ endDate, endText, ...props }: Props): JSX.Element => {
-  let [endTime, setEndTime] = useState<number>(); // eslint-disable-line prefer-const
-  let [text, setText] = useState(''); // eslint-disable-line prefer-const
+  const endTime = Math.floor(new Date(endDate).getTime() / 1000);
+  const [text, setText] = useState('');
 
-  if (!text) {
-    endTime = Math.floor(new Date(endDate).getTime() / 1000);
-    setEndTime(endTime);
-    text = generateText(endTime, endText);
-    setText(text);
-  }
+  useEffect(() => {
+    setText(generateText(endTime, endText));
 
-  useInterval(() => {
-    const newText = generateText(endTime, endText);
-    if (newText !== text) setText(newText);
-  }, 1000);
+    const interval = setInterval(() => {
+      const newText = generateText(endTime, endText);
+      if (newText !== text) setText(newText);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Flex

@@ -1,20 +1,17 @@
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
 import { useRouter } from 'next/router';
-import {
-  Flex,
-  NavLink,
-  Container,
-  Close,
-  Box,
-  IconButton,
-  Divider,
-  Text,
-  useColorMode,
-  Badge
-} from 'theme-ui';
+import { Flex, NavLink, Container, Close, Box, IconButton, Divider, Text, useColorMode } from 'theme-ui';
 import { Icon } from '@makerdao/dai-ui-icons';
 import AccountSelect from './header/AccountSelect';
 import BallotStatus from 'modules/polling/components/BallotStatus';
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBreakpointIndex } from '@theme-ui/match-media';
 import NetworkSelect from './header/NetworkSelect';
 import { ErrorBoundary } from '../ErrorBoundary';
@@ -24,19 +21,14 @@ import { Menu, MenuButton, MenuItem, MenuList } from '@reach/menu-button';
 import { useGasPrice } from 'modules/web3/hooks/useGasPrice';
 import { ExternalLink } from '../ExternalLink';
 import { useWeb3 } from 'modules/web3/hooks/useWeb3';
-import useSWR, { useSWRConfig } from 'swr';
-import { PollsResponse } from 'modules/polling/types/pollsResponse';
-import { Proposal } from 'modules/executive/types';
-import { fetchJson } from 'lib/fetchJson';
-import { isActivePoll } from 'modules/polling/helpers/utils';
 import { GASNOW_URL, SupportedNetworks } from 'modules/web3/constants/networks';
 import { ClientRenderOnly } from '../ClientRenderOnly';
 
-const MenuItemContent = ({ label, icon }) => {
+const MenuItemContent = ({ label, icon }: { label: React.ReactNode; icon: string }) => {
   return (
     <Flex sx={{ alignItems: 'center', gap: 2, justifyContent: 'flex-start' }}>
       <Icon name={icon} size={'auto'} sx={{ height: '20px', width: '20px' }} />
-      {typeof label === 'function' ? { label } : <Text>{label}</Text>}
+      {typeof label === 'string' ? <Text>{label}</Text> : label}
     </Flex>
   );
 };
@@ -121,7 +113,10 @@ const HeaderMenu = ({ onToggleTheme, mode, ...props }): JSX.Element => {
             variant: 'menubuttons.default.headerItem'
           }}
         >
-          <MenuItemContent icon="color_mode_sun" label={`${mode === 'dark' ? 'Light' : 'Dark'} mode`} />
+          <MenuItemContent
+            icon={`color_mode_${mode === 'dark' ? 'sun' : 'moon'}`}
+            label={`${mode === 'dark' ? 'Light' : 'Dark'} mode`}
+          />
         </MenuItem>
       </MenuList>
     </Menu>
@@ -135,7 +130,6 @@ const Header = (): JSX.Element => {
   const { account } = useAccount();
   const { network } = useWeb3();
   const { data: gas } = useGasPrice({ network });
-  const { cache } = useSWRConfig();
   const [mode, setMode] = useColorMode();
 
   const onToggleTheme = () => {
@@ -145,26 +139,12 @@ const Header = (): JSX.Element => {
     setMode(next);
   };
 
-  // Fetch polls & proposals from cache or revalidate if we don't have them
-  const dataKeyPolls = `/api/polling/all-polls?network=${network}`;
-  const { data: pollsData } = useSWR<PollsResponse>(dataKeyPolls, fetchJson, {
-    revalidateOnMount: !cache.get(dataKeyPolls)
-  });
-  const activePolls = useMemo(() => pollsData?.polls?.filter(poll => isActivePoll(poll)), [pollsData?.polls]);
-
-  const dataKeyProposals = `/api/executive?network=${network}&start=0&limit=3&sortBy=active`;
-  const { data: proposalsData } = useSWR<Proposal[]>(dataKeyProposals, fetchJson, {
-    revalidateOnMount: !cache.get(dataKeyProposals)
-  });
-  const activeProposals = proposalsData?.filter(p => p.active);
-
   return (
     <Box
       as="header"
       pt={3}
       pb={2}
       px={3}
-      // variant="styles.header"
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -197,23 +177,6 @@ const Header = (): JSX.Element => {
             >
               Polling
             </NavLink>
-            {bpi > 1 && activePolls && activePolls.length > 0 && (
-              <NavLink href={'/polling'} title="View polling page" p={0}>
-                <Badge
-                  variant="solidCircle"
-                  sx={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    display: 'flex',
-                    p: 2,
-                    mt: '-1rem',
-                    ml: -10
-                  }}
-                >
-                  {activePolls?.length}
-                </Badge>
-              </NavLink>
-            )}
           </Flex>
           <Flex>
             <NavLink
@@ -228,22 +191,6 @@ const Header = (): JSX.Element => {
             >
               Executive
             </NavLink>
-            {bpi > 1 && activeProposals && activeProposals.length > 0 && (
-              <NavLink href={'/executive'} title="View executive page" p={0}>
-                <Badge
-                  sx={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    display: 'flex',
-                    mt: '-1rem',
-                    ml: -10
-                  }}
-                  variant="solidCircle"
-                >
-                  {activeProposals.length}
-                </Badge>
-              </NavLink>
-            )}
           </Flex>
 
           <NavLink
@@ -276,7 +223,7 @@ const Header = (): JSX.Element => {
         </Flex>
       </Flex>
       <Flex sx={{ alignItems: 'center' }}>
-        {bpi > 1 && account && network === SupportedNetworks.MAINNET && (
+        {bpi > 1 && account && network === SupportedNetworks.MAINNET && gas && (
           <ExternalLink
             title="Ethereum Gas Price"
             href={GASNOW_URL}
@@ -430,7 +377,10 @@ const MobileMenu = ({ hide, router, gas, onToggleTheme, mode, network }) => {
                   icon="gas"
                   label={
                     <Text>
-                      <span sx={{ color: 'primary' }}>{gas}</span> Gwei
+                      <Text as="span" sx={{ color: 'primary' }}>
+                        {gas}
+                      </Text>{' '}
+                      Gwei
                     </Text>
                   }
                 />
@@ -467,7 +417,10 @@ const MobileMenu = ({ hide, router, gas, onToggleTheme, mode, network }) => {
               </ExternalLink>
             </Flex>
             <Flex onClick={onToggleTheme}>
-              <MenuItemContent icon="color_mode_sun" label={`${mode === 'dark' ? 'Light' : 'Dark'} mode`} />
+              <MenuItemContent
+                icon={`color_mode_${mode === 'dark' ? 'sun' : 'moon'}`}
+                label={`${mode === 'dark' ? 'Light' : 'Dark'} mode`}
+              />
             </Flex>
           </Flex>
         </Flex>

@@ -1,7 +1,13 @@
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
 import { Box, Button, Card, Divider, Flex, Text, Spinner } from 'theme-ui';
 import { Poll } from 'modules/polling/types';
-import { useAnalytics } from 'modules/app/client/analytics/useAnalytics';
-import { ANALYTICS_PAGES } from 'modules/app/client/analytics/analytics.constants';
 import { Icon } from '@makerdao/dai-ui-icons';
 import ActivePollsBox from './ActivePollsBox';
 import { useContext, useState, useEffect } from 'react';
@@ -36,7 +42,6 @@ export default function ReviewBox({
   polls: Poll[];
   ballotPollIds: string[];
 }): JSX.Element {
-  const { trackButtonClick } = useAnalytics(ANALYTICS_PAGES.POLLING_REVIEW);
   const {
     ballotStep,
     setStep,
@@ -286,7 +291,7 @@ export default function ReviewBox({
                     <Text>You pay the transaction fee.</Text>
                   </Flex>
                   <Box>
-                    <ExternalLink title="View on etherscan" href={'vote.makerdao.com'}>
+                    <ExternalLink href="https://manual.makerdao.com/" title="Learn more">
                       <Text as="p" sx={{ fontSize: [1, 3], textAlign: 'center' }}>
                         Learn more
                         <Icon ml={2} name="arrowTopRight" size={2} />
@@ -317,7 +322,10 @@ export default function ReviewBox({
                     <Text as="p" variant="caps">
                       Eligibility Criteria
                     </Text>
-                    <ExternalLink href="https://manual.makerdao.com/" title="Learn more">
+                    <ExternalLink
+                      href="https://manual.makerdao.com/governance/voting-in-makerdao/gasless-poll-voting/"
+                      title="Learn more"
+                    >
                       <Text as="p" sx={{ fontSize: [1, 3], textAlign: 'center', color: 'accentBlue' }}>
                         Learn more
                         <Icon ml={2} name="arrowTopRight" size={2} />

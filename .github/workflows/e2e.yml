@@ -8,13 +8,13 @@ on:
       - ci-with-spock
   pull_request:
     # Sequence of patterns matched against refs/heads
-    branches:    
+    branches:
       - master
       - develop
 jobs:
   ui-chrome-tests:
     runs-on: ubuntu-latest
-    container: makerdaodux/cypress-dapptools-node-14:latest
+    container: cypress/browsers:node16.18.0-chrome107-ff106-edge
     strategy:
       fail-fast: false
     env:
@@ -36,6 +36,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         
+
       - name: Install node packages
         run: yarn
         
@@ -57,7 +58,7 @@ jobs:
       #     name: build
 
       - name: 'UI Tests - Chrome'
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v3
         with:
           # we have already installed all dependencies above
           # use (install: false) if you want to do parallel jobs.

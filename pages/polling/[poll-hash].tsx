@@ -1,9 +1,17 @@
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
 import { useEffect, useState } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import ErrorPage from 'modules/app/components/ErrorPage';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { Card, Flex, Divider, Heading, Text, Box, Button, Badge } from 'theme-ui';
+import { Card, Flex, Divider, Heading, Text, Box, Button, Badge, Label, Checkbox } from 'theme-ui';
 import { useBreakpointIndex } from '@theme-ui/match-media';
 import { Icon } from '@makerdao/dai-ui-icons';
 import { fetchJson } from 'lib/fetchJson';
@@ -40,10 +48,17 @@ import { InternalLink } from 'modules/app/components/InternalLink';
 import { ExternalLink } from 'modules/app/components/ExternalLink';
 import usePollsStore from 'modules/polling/stores/polls';
 import { PollVoteTypeIndicator } from 'modules/polling/components/PollOverviewCard/PollVoteTypeIndicator';
+import { DialogOverlay, DialogContent } from 'modules/app/components/Dialog';
+import BoxWithClose from 'modules/app/components/BoxWithClose';
 
 const editMarkdown = content => {
   // hide the duplicate proposal title
-  return content.replace(/^<h1>.*<\/h1>|^<h2>.*<\/h2>/, '');
+  return (
+    content
+      .replace(/^<h1>.*<\/h1>|^<h2>.*<\/h2>/, '')
+      // fixes issue with older images that are too large
+      .replace(/(<img)(.*src=".*")(>)/g, '$1 width="100%"$2$3')
+  );
 };
 
 const PollView = ({ poll }: { poll: Poll }) => {
@@ -54,6 +69,8 @@ const PollView = ({ poll }: { poll: Poll }) => {
   const { account } = useAccount();
   const bpi = useBreakpointIndex({ defaultIndex: 2 });
   const [shownOptions, setShownOptions] = useState(6);
+  const [overlayOpen, setOverlayOpen] = useState(false);
+  const [showSmallVoters, setShowSmallVoters] = useState(false);
 
   const VotingWeightComponent = dynamic(() => import('../../modules/polling/components/VoteWeightVisual'), {
     ssr: false
@@ -76,6 +93,10 @@ const PollView = ({ poll }: { poll: Poll }) => {
       setNextSlug(poll.ctx?.next?.slug);
     }
   }, [filteredPollData, poll]);
+
+  const handleSmallVotersChecked = () => {
+    setShowSmallVoters(!showSmallVoters);
+  };
 
   return (
     <PrimaryLayout sx={{ maxWidth: 'dashboard' }}>
@@ -164,6 +185,43 @@ const PollView = ({ poll }: { poll: Poll }) => {
                         <PollCategoryTag tag={c} />
                       </Box>
                     ))}
+                    {poll.tags.some(tag => tag.id.includes('impact')) && (
+                      <>
+                        <Flex onClick={() => setOverlayOpen(true)} sx={{ cursor: 'pointer' }}>
+                          <Icon name="info" color="primary" mt={3} />
+                        </Flex>
+                        {overlayOpen && (
+                          <DialogOverlay isOpen={overlayOpen} onDismiss={() => setOverlayOpen(false)}>
+                            <DialogContent ariaLabel="Impact tags info">
+                              <BoxWithClose close={() => setOverlayOpen(false)}>
+                                <Flex
+                                  sx={{
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                  }}
+                                >
+                                  <Heading sx={{ mb: 3 }}>Impact estimation tags</Heading>
+                                  <Text sx={{ textAlign: 'center' }}>
+                                    GovAlpha applies impact estimations to active governance items (MIPs and
+                                    Signal Requests).
+                                    <br />
+                                    To know more about impact tags please visit the{' '}
+                                    <ExternalLink
+                                      title="Maker Operational Manual"
+                                      href="https://manual.makerdao.com/governance/off-chain/impact-estimations"
+                                    >
+                                      <Text>Maker Operational Manual</Text>
+                                    </ExternalLink>
+                                    .
+                                  </Text>
+                                </Flex>
+                              </BoxWithClose>
+                            </DialogContent>
+                          </DialogOverlay>
+                        )}
+                      </>
+                    )}
                   </Flex>
 
                   <Flex sx={{ justifyContent: 'space-between', mb: 2, flexDirection: ['column', 'row'] }}>
@@ -255,11 +313,34 @@ const PollView = ({ poll }: { poll: Poll }) => {
                       sx={{ p: [3, 4], flexDirection: 'column' }}
                       key={'votes by address'}
                     >
-                      <Text variant="microHeading" sx={{ mb: 3 }}>
-                        Voting By Address
-                      </Text>
+                      <Flex sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                        <Text variant="microHeading">Voting By Address</Text>
+                        <Box>
+                          <Label
+                            variant="thinLabel"
+                            sx={{
+                              fontSize: 1,
+                              alignItems: 'center',
+                              color: 'textSecondary',
+                              py: 0,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <Checkbox checked={showSmallVoters} onChange={handleSmallVotersChecked} />
+                            <Text variant="caps">Show &lt;0.05 MKR voters</Text>
+                          </Label>
+                        </Box>
+                      </Flex>
                       {tally && tally.votesByAddress && tally.numVoters > 0 ? (
-                        <VotesByAddress tally={tally} poll={poll} />
+                        <VotesByAddress
+                          tally={{
+                            ...tally,
+                            votesByAddress: tally.votesByAddress.filter(
+                              vote => showSmallVoters || +vote.mkrSupport >= 0.05
+                            )
+                          }}
+                          poll={poll}
+                        />
                       ) : tally && tally.numVoters === 0 ? (
                         <Text sx={{ color: 'textSecondary' }}>No votes yet</Text>
                       ) : (
@@ -289,7 +370,7 @@ const PollView = ({ poll }: { poll: Poll }) => {
                   ]
                 ),
                 <div key={2}>
-                  <div
+                  <Box
                     data-testid="poll-detail"
                     sx={{ variant: 'markdown.default', p: [3, 4] }}
                     dangerouslySetInnerHTML={{ __html: editMarkdown(poll.content) }}
@@ -315,7 +396,7 @@ const PollView = ({ poll }: { poll: Poll }) => {
                 </div>
               ]}
               banner={
-                tally && tally.totalMkrParticipation > 0 && tally.winningOptionName ? (
+                tally && (tally.totalMkrParticipation as number) > 0 && tally.winningOptionName ? (
                   <Box>
                     <Divider my={0} />
                     <PollWinningOptionBox tally={tally} poll={poll} />
@@ -337,6 +418,7 @@ const PollView = ({ poll }: { poll: Poll }) => {
               fields={[
                 'polling contract v2',
                 'polling contract v1',
+                'arbitrum polling contract',
                 'savings rate',
                 'total dai',
                 'debt ceiling',

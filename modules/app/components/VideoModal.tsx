@@ -1,3 +1,11 @@
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
 import React from 'react';
 import { Box } from 'theme-ui';
 import { DialogOverlay, DialogContent } from '@reach/dialog';
@@ -42,7 +50,7 @@ const VideoModal = ({
             src={url}
             width="620"
             height="360"
-            sx={{
+            style={{
               width: '100%',
               height: '100%'
             }}

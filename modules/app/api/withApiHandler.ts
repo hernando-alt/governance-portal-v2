@@ -1,11 +1,18 @@
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-import { withSentry } from '@sentry/nextjs';
 import logger from 'lib/logger';
 import { API_ERROR_CODES } from '../constants/apiErrors';
-import { getMessageFromCode, ERROR_CODES } from 'eth-rpc-errors';
+import { getMessageFromCode, errorCodes } from 'eth-rpc-errors';
 
 export default function withApiHandler(handler: NextApiHandler, { allowPost = false } = {}): NextApiHandler {
-  return withSentry(async (req: NextApiRequest, res: NextApiResponse) => {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', allowPost ? 'GET, POST' : 'GET');
     res.setHeader('Access-Control-Allow-Headers', 'Authorization, Accept, Content-Type');
@@ -28,7 +35,7 @@ export default function withApiHandler(handler: NextApiHandler, { allowPost = fa
     } catch (error) {
       const rpcMessage =
         'code' in error &&
-        [...Object.values(ERROR_CODES.provider), ...Object.values(ERROR_CODES.rpc)].includes(error['code'])
+        [...Object.values(errorCodes.provider), ...Object.values(errorCodes.rpc)].includes(error['code'])
           ? getMessageFromCode(error['code'])
           : null;
 
@@ -48,5 +55,5 @@ export default function withApiHandler(handler: NextApiHandler, { allowPost = fa
         }
       });
     }
-  });
+  };
 }

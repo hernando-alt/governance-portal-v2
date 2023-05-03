@@ -1,3 +1,11 @@
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
 import BigNumber from 'lib/bigNumberJs';
 import { Card, Text, Spinner } from 'theme-ui';
 import { useBreakpointIndex } from '@theme-ui/match-media';
@@ -66,12 +74,12 @@ const ESMHistory = ({ allEsmJoins }: Props): JSX.Element => {
                       }}
                     >
                       <td
-                        css={`
-                          white-space: nowrap;
-                          max-width: 205px;
-                          text-overflow: ellipsis;
-                          overflow: hidden;
-                        `}
+                        style={{
+                          whiteSpace: 'nowrap',
+                          maxWidth: '205px',
+                          textOverflow: 'ellipsis',
+                          overflow: 'hidden'
+                        }}
                       >
                         <Text as="p" color="text" variant="caption" sx={{ paddingY: 3, mr: 2 }}>
                           {bpi > 0
@@ -80,9 +88,9 @@ const ESMHistory = ({ allEsmJoins }: Props): JSX.Element => {
                         </Text>
                       </td>
                       <td
-                        css={`
-                          white-space: nowrap;
-                        `}
+                        style={{
+                          whiteSpace: 'nowrap'
+                        }}
                       >
                         <Text as="p" color="text" variant="caption" sx={{ paddingY: 3, mr: 2 }}>
                           {amount.gte(0.1)

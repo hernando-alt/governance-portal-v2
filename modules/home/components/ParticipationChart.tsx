@@ -1,3 +1,11 @@
+/*
+
+SPDX-FileCopyrightText: © 2023 Dai Foundation <www.daifoundation.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+*/
+
 import { Box, Text, useThemeUI, get } from 'theme-ui';
 import { Tooltip, XAxis, YAxis, ResponsiveContainer, Legend, AreaChart, Area } from 'recharts';
 import { format, sub } from 'date-fns';
@@ -58,7 +66,11 @@ const ParticipationChart = ({
     );
   };
 
-  const formatLegend = () => <span sx={{ color: 'onSurface' }}>MKR Locked in Chief</span>;
+  const formatLegend = () => (
+    <Text as="span" sx={{ color: 'onSurface' }}>
+      MKR Locked in Chief
+    </Text>
+  );
 
   return (
     <ResponsiveContainer width={'100%'} minHeight={200}>
