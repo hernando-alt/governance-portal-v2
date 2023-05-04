@@ -74,7 +74,7 @@ jobs:
           install: false
           command: yarn start:ci
           ## command: yarn run e2e:ci
-          wait-on: 'http://localhost:8545, http://localhost:8546, http://spock:3001'
+          wait-on: 'http://localhost:8545, http://localhost:8546, http://localhost:3001'
           wait-on-timeout: 120
           browser: chrome
           record: true
