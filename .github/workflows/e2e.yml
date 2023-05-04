@@ -47,7 +47,8 @@ jobs:
         env:
           SEED_BLOCKS: 5815619,6495082,7218785,7744939
         ports:
-          - 3001:3001      
+          - 3001:3001
+        options: --network-alias spock
     steps:
       - name: Checkout
         uses: actions/checkout@v3
