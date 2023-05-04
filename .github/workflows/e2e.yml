@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - develop
-      - ci-with-spock
+      - e2e-tests
   pull_request:
     # Sequence of patterns matched against refs/heads
     branches:
