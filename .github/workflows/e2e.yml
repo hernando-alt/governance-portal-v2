@@ -73,7 +73,7 @@ jobs:
           # use (install: false) if you want to do parallel jobs.
           install: false
           command: yarn e2e:ci
-          wait-on: 'http://localhost:8545, http://localhost:8546'
+          wait-on: 'http://localhost:8545, http://localhost:8546, http://localhost:3001'
           wait-on-timeout: 10
           browser: chrome
           record: true
