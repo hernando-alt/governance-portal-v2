@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   postgres:
-    image: tylerya/govpolldb-postgres:latest
+    image: tylerya/govpolldb-postgres:v0.1
     container_name: postgres-vulcan2x-arbitrum
     command: ['postgres', '-c', 'log_min_duration_statement=1000']
     environment:
@@ -15,7 +15,7 @@ services:
     healthcheck:
       test: pg_isready -p 5432 -h localhost -U user -d database
   spock:
-    image: tylerya/govpolldb-app:latest
+    image: tylerya/govpolldb-app:v0.1
     container_name: spock-test-container
     command: ['yarn', 'start-all']
     environment:
