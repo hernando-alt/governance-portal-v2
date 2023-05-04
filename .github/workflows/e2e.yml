@@ -31,7 +31,24 @@ jobs:
       ALCHEMY_GOERLI_API_KEY_HH: ${{ secrets.ALCHEMY_GOERLI_API_KEY_HH }}
       NEXT_PUBLIC_ALCHEMY_ARBITRUM_TESTNET_KEY: ${{ secrets.NEXT_PUBLIC_ALCHEMY_ARBITRUM_TESTNET_KEY }}
       NEXT_PUBLIC_ALCHEMY_ARBITRUM_KEY: ${{ secrets.NEXT_PUBLIC_ALCHEMY_ARBITRUM_KEY }}
-          
+    services:
+      postgres:
+        image: tylerya/govpolldb-postgres:v0.1
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: database
+        ports:
+          - 5432:5432
+      spock:
+        image: tylerya/govpolldb-app:v0.1
+        env:
+          SEED_BLOCKS: 5815619,6495082,7218785,7744939
+        ports:
+          - 3001:3001
+        options: --network-alias spock
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,13 +59,6 @@ jobs:
         
       - name: start testchains
         run: yarn hardhat:gasless:config &
-      
-      - name: docker compose
-        run: |
-          LATEST_VERSION=v2.12.2
-          sudo curl -L "https://github.com/docker/compose/releases/download/$LATEST_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          sudo docker-compose up &
       
 
       ## Download prebuilt next data
