@@ -16,6 +16,7 @@
     "test:ci": "jest --runInBand --ci --coverage --detectOpenHandles --forceExit",
     "e2e": "APP_ENV=test start-server-and-test dev http://localhost:3000 cypress",
     "e2e:headless": "APP_ENV=test npm run fund && start-server-and-test dev http://localhost:3000 cypress:headless",
+    "e2e:ci": "yarn build-sdk && yarn e2e:headless",
     "cypress": "cypress open",
     "cypress:headless": "cypress run",
     "fund": "npx hardhat run scripts/setup.js --network goerli",
