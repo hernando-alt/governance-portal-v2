@@ -48,7 +48,6 @@ jobs:
           SEED_BLOCKS: 5815619,6495082,7218785,7744939
         ports:
           - 3001:3001
-        options: --network-alias spock
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -74,7 +73,7 @@ jobs:
           # use (install: false) if you want to do parallel jobs.
           install: false
           command: yarn e2e:ci
-          wait-on: 'http://localhost:8545, http://localhost:8546, http://localhost:3001'
+          wait-on: 'http://localhost:8545, http://localhost:8546'
           wait-on-timeout: 10
           browser: chrome
           record: true
